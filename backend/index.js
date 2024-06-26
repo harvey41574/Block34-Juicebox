@@ -3,12 +3,14 @@ require('dotenv').config();
 const { PORT = 3000 } = process.env;
 const express = require('express');
 const server = express();
-
+const path= require('path');
 const bodyParser = require('body-parser');
 server.use(bodyParser.json());
 
 const morgan = require('morgan');
 server.use(morgan('dev'));
+
+server.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 server.use((req, res, next) => {
   console.log("<____Body Logger START____>");

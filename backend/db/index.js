@@ -1,5 +1,5 @@
 const { Client } = require('pg') // imports the pg module
-
+const bcrypt= require('bcrypt');
 const client = new Client({
   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/juicebox-dev',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
@@ -14,14 +14,15 @@ async function createUser({
   password,
   name,
   location
-}) {
+}) { const hashedPw= await bcrypt.hash(password, 10);
+
   try {
     const { rows: [ user ] } = await client.query(`
-      INSERT INTO users(username, password, name) 
-      VALUES($1, $2, $3) 
+      INSERT INTO users(username, password, name, location) 
+      VALUES($1, $2, $3, $4) 
       ON CONFLICT (username) DO NOTHING 
       RETURNING *;
-    `, [username, password, name, location]);
+    `, [username, hashedPw, name, location]);
 
     return user;
   } catch (error) {

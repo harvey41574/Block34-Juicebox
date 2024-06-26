@@ -46,6 +46,7 @@ postsRouter.post('/', requireUser, async (req, res, next) => {
     postData.authorId = req.user.id;
     postData.title = title;
     postData.content = content;
+    postData.tags= tags;
 
     const post = await createPost(postData);
 
@@ -98,7 +99,13 @@ postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
 });
 
 postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
-  res.send({ message: 'under construction' });
+  try{
+    const post= await deletePost(req.params.id);
+  
+  res.send(post,{ message: 'post deleted' });
+  }catch(error){
+    next(error);
+  }
 });
 
 module.exports = postsRouter;

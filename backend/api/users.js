@@ -1,6 +1,7 @@
 const express = require('express');
 const usersRouter = express.Router();
-
+const bcrypt= require('bcrypt');
+const {JWT_SECRET}= require('dotenv');
 const { 
   createUser,
   getAllUsers,
@@ -34,8 +35,9 @@ usersRouter.post('/login', async (req, res, next) => {
 
   try {
     const user = await getUserByUsername(username);
+    const match= await bcrypt.compare(password, user.password);
 
-    if (user && user.password == password) {
+    if (user && match) {
       const token = jwt.sign({ 
         id: user.id, 
         username
